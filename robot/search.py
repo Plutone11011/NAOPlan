@@ -27,7 +27,7 @@ class NaoProblem:
         """Executable actions in the state"""
         pass
 
-    def result(self, staet, action):
+    def result(self, state, action):
         """The state that results from executing this action in this state."""
         pass
 

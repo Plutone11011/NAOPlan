@@ -1,24 +1,38 @@
-from robot.constants import JOINT_NAMES
 from collections import OrderedDict
 import numpy as np
+
+from robot.constants import JOINT_NAMES, STAND_ZERO
 
 
 class NaoState:
     """the Nao state is an ordered dict of joint names as keys
     and their current coordinates as values. The keys are ordered
     to provide consistency between operations with different states"""
-    def __init__(self, motion_proxy):
-        s = {}
-        for joint_name in JOINT_NAMES:
-            s[joint_name] = np.array(motion_proxy.getPosition(joint_name, 1, True)[:3])
+    def __init__(self, motion_proxy, nao_state=None):
+        # if nao state is defined, it's one of the mandatory predefined positions
+        if not nao_state:
+            nao_state = {}
+            for joint_name in JOINT_NAMES:
+                nao_state[joint_name] = np.array(motion_proxy.getPosition(joint_name, 1, True)[:3])
 
-        self.state = OrderedDict(sorted(s.items(), key=lambda t: t[0]))
+        self.state = OrderedDict(sorted(nao_state.items(), key=lambda t: t[0]))
+
+    def get_joint_coordinate(self, joint_name):
+        return self.state[joint_name]
+
+
+# subclassing for the goal states
+class StandZero(NaoState):
+
+    def __init__(self, motion_proxy):
+        NaoState.__init__(self, motion_proxy, STAND_ZERO)
 
 
 class NaoProblem:
     """We define a NaoProblem for each subsequence of actions between
     a mandatory pose P_i and the next P_i+1. This means that, in each NaoProblem
-    the initial state will be the state in pose P_i and the goal will be the state in pose P_i+1"""
+    the initial state will be the state in pose P_i and the goal will be the state in pose P_i+1
+    Subclass this class to create an instance of a particular Nao subproblem"""
     def __init__(self, initial_state, goal):
         self.initial_state = initial_state
         self.goal = goal
@@ -46,6 +60,17 @@ class NaoProblem:
         """Returns path cost from state1 to state2
         with action, assuming a certain paid cost """
         pass
+
+    def h(self, nao_state):
+        """The heuristic for each state computes the
+        euclidean distance between the current joints coordinates
+        and the joint coordinates of the goal. This heuristic is admissible
+        because Nao can't actually reach the goal without covering at least that distance"""
+        joints_distances = []
+        for joint_coordinates_state, joint_coordinates_goal in zip(nao_state.state.values(), self.goal.state.values()):
+            joints_distances.append(np.linalg.norm(joint_coordinates_state - joint_coordinates_goal, ord=2))
+
+        return sum(joints_distances)
 
 
 class NaoNode:

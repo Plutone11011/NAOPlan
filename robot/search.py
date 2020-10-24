@@ -73,6 +73,31 @@ class NaoProblem:
         return sum(joints_distances)
 
 
+# each subproblem defines his own initial state and goal,
+# as well as actions and results
+# heuristic is common to all problems, as well as path cost
+class NaoProblemP0P1(NaoProblem):
+
+    def __init__(self, initial_state, goal):
+        NaoProblem.__init__(initial_state, goal)
+
+    def actions(self, state):
+        # still to define
+        pass
+
+    def result(self, state, action):
+        # still to define
+        pass
+
+    def goal_test(self, state):
+        # still to define
+        pass
+
+    def is_valid(self, state):
+        # still to define
+        pass
+
+
 class NaoNode:
     """The NaoNode knows the parent, the action with which it was generated,
     its state and the path_cost(g)"""

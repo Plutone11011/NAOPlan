@@ -7,14 +7,17 @@ from robot.constants import JOINT_NAMES, STAND_ZERO
 class NaoState:
     """the Nao state is an ordered dict of joint names as keys
     and their current coordinates as values. The keys are ordered
-    to provide consistency between operations with different states"""
+    to provide consistency between operations with different states.
+    Subclass this if you want a state for a specific posture (see StandZero)"""
     def __init__(self, motion_proxy, nao_state=None):
         # if nao state is defined, it's one of the mandatory predefined positions
+        print '{'
         if not nao_state:
             nao_state = {}
             for joint_name in JOINT_NAMES:
-                nao_state[joint_name] = np.array(motion_proxy.getPosition(joint_name, 1, True)[:3])
-
+                nao_state[joint_name] = motion_proxy.getPosition(joint_name, 1, True)[:3]
+                print joint_name + ': array(' + str(nao_state[joint_name]) + '),'
+        print '}'
         self.state = OrderedDict(sorted(nao_state.items(), key=lambda t: t[0]))
 
     def get_joint_coordinate(self, joint_name):
@@ -66,6 +69,7 @@ class NaoProblem:
         euclidean distance between the current joints coordinates
         and the joint coordinates of the goal. This heuristic is admissible
         because Nao can't actually reach the goal without covering at least that distance"""
+        # possibly add speed/time in the future
         joints_distances = []
         for joint_coordinates_state, joint_coordinates_goal in zip(nao_state.state.values(), self.goal.state.values()):
             joints_distances.append(np.linalg.norm(joint_coordinates_state - joint_coordinates_goal, ord=2))

@@ -7,6 +7,8 @@ def main():
     print("Inititiating robot")
     robotManager.robotConnect()
     robotManager.initRobot()
+    robotManager.planning()
+    robotManager.onFinish()
 
 if __name__=='__main__':
     main()

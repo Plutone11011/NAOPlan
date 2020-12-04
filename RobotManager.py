@@ -9,12 +9,15 @@ from animations import pensive_pose, relaxation_pose, rest_pose, scratchBottom_p
 from animations import sneeze_pose, stretch1_pose, stretch2_pose, stretch3_pose, yum_pose, stretch1_pose, stretch2_pose, yum_pose
 from animations import happy_pose, happy2_pose, happy3_pose, proud_pose, showMuscles1_pose, showMuscles2_pose, winner_pose, winner2_pose
 from animations import crying_pose, desperate_pose, desperate2_pose, desperate3_pose, disappointed_pose, embarassed_pose, crying_pose
-
+from animations import disco_right_hand, disco_left_hand, two_hand_air_pose, one_hand_air_pose, shaking_head_pose, kisses_pose
+from animations import sprinkler_pose, shaking_booty,hands_up_down_pose,introduction_pose
 class RobotManager:
 
 	def __init__(self):
 		self.connected = False
 		self.session = Session()
+		self.movePool1 =[]
+
 
 	def robotConnect(self):
 		print("robot trying to connect")
@@ -40,13 +43,13 @@ class RobotManager:
 
 	def planning(self):
 		print(self.postureProxy.getPostureList())
-		listOfMoves = ["Stand", "StandZero", "Sit", "SitRelax"]
-		for move in listOfMoves:
-			time.sleep(1)
-			self.postureProxy.goToPosture(move, 0.7)
-		self.textSpeakProxy.post.say("Tired")
-		self.runMotion(exhausted_pose)
-		self.runMotion(exhausted2_pose)
+		# listOfMoves = ["Stand", "StandZero", "Sit", "SitRelax"]
+		# for move in listOfMoves:
+		# 	time.sleep(1)
+		# 	self.postureProxy.goToPosture(move, 0.7)
+		# self.textSpeakProxy.post.say("Tired")
+		self.runMotion(introduction_pose)
+		self.runMotion(two_hand_air_pose)
 
 	def onFinish(self):
 		self.textSpeakProxy.post.say("Bye!")
